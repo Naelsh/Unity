@@ -4,6 +4,9 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
 	public float speed = 7f;
+	public GameObject laserShot;
+	public float fireSpeed = 0.2f;
+	public float hitPoints = 500f;
 
 	private float padding = 0.6f;
 	private float xMin, xMax, yMin, yMax;
@@ -24,12 +27,24 @@ public class PlayerController : MonoBehaviour {
 		xMax = rightMostPos.x - padding;
 		yMin = topMostPos.y + padding;
 		yMax = bottomMostPos.y - padding;
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		Vector3 shipPos = new Vector3 (this.transform.position.x, this.transform.position.y, 0f);
+		MoveShip ();
 
+		if (Input.GetKeyDown(KeyCode.Space)) {
+			InvokeRepeating("FireProjectile", 0.000000001f, fireSpeed);
+		}
+		if (Input.GetKeyUp(KeyCode.Space)) {
+			CancelInvoke("FireProjectile");
+		}
+	}
+
+	void MoveShip(){
+		Vector3 shipPos = new Vector3 (this.transform.position.x, this.transform.position.y, 0f);
+		
 		// increment or decrement based on key press.
 		// Time.deltaTime is used in order to update based on time lapsed and not only frames passed.
 		// horizontal movement
@@ -38,18 +53,33 @@ public class PlayerController : MonoBehaviour {
 		}else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
 			shipPos.x += (speed * Time.deltaTime);
 		}
-
+		
 		// vertical movement
 		if (Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow)) {
 			shipPos.y += (speed * Time.deltaTime);
 		}else if (Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow)) {
 			shipPos.y -= (speed * Time.deltaTime);
 		}
-
+		
 		// make sure the ship cant fly ofscreen
 		shipPos.x = Mathf.Clamp (shipPos.x, xMin, xMax);
 		shipPos.y = Mathf.Clamp (shipPos.y, yMin, yMax);
-
+		
 		this.transform.position = shipPos;
+	}
+
+	void FireProjectile(){
+			Instantiate(laserShot, new Vector3(this.transform.position.x,this.transform.position.y + 1f,this.transform.position.z), Quaternion.identity);
+	}
+
+	void OnTriggerEnter2D(Collider2D collider){
+		EnemyLaser enemyLaser = collider.gameObject.GetComponent<EnemyLaser> ();
+		if (enemyLaser) {
+			hitPoints -= enemyLaser.GetDamage();
+			enemyLaser.Hit();
+			if (hitPoints <= 0) {
+				Destroy(gameObject);
+			}
+		}
 	}
 }

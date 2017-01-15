@@ -31,7 +31,6 @@ public class EnemySpawner : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-
 		if (isMovingRight) {
 			transform.position += Vector3.right * speed * Time.deltaTime;
 		} else {
@@ -45,7 +44,6 @@ public class EnemySpawner : MonoBehaviour {
 		}else if (leftMostOfFormation < xMin) {
 			isMovingRight = true;
 		}
-
 	
 	}
 
