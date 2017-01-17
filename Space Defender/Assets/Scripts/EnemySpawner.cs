@@ -7,6 +7,7 @@ public class EnemySpawner : MonoBehaviour {
 	public float width = 5f;
 	public float height = 2f;
 	public float speed = 4f;
+	public float spawnDelay = 0.5f;
 
 	private float xMin, xMax;
 	private bool isMovingRight = true;
@@ -44,6 +45,10 @@ public class EnemySpawner : MonoBehaviour {
 		}else if (leftMostOfFormation < xMin) {
 			isMovingRight = true;
 		}
+
+		if (AllMembersDead()) {
+			SpawnEnemyUntilFull();
+		}
 	
 	}
 
@@ -57,5 +62,38 @@ public class EnemySpawner : MonoBehaviour {
 			newEnemy.transform.parent = child; // creates the GameObject as an object underneath the parentobject. Thus making it neat in the Hierarchy-view (and spawn at correct place)
 		}
 
+	}
+
+	void SpawnEnemyUntilFull(){
+		Transform nextFreePosition = NextFreePosition ();
+		if (nextFreePosition) {
+			GameObject newEnemy = Instantiate (enemy, nextFreePosition.position, Quaternion.identity) as GameObject;
+			newEnemy.transform.parent = nextFreePosition;
+		}
+		if (NextFreePosition()) {
+			Invoke ("SpawnEnemyUntilFull", spawnDelay);
+		}
+	}
+
+	// cycles thrugh each position in the hierarchy. For each spawnlocation (child) in the EnemySpawner it will return false if there is an enemy present (grandchild)
+	// if there are no grandchildren, it returns true, that is "All Members are Dead"
+	bool AllMembersDead(){
+		foreach (Transform child in transform) {
+			if (child.childCount > 0) {
+				return false;
+			}
+		}
+		return true;
+
+	}
+
+	// This function searches the positions for the next empty position. Empty in this regard is if there is no enemy ship present
+	Transform NextFreePosition(){
+		foreach (Transform child in transform) {
+			if (child.childCount == 0) {
+				return child;
+			}
+		}
+		return null;
 	}
 }

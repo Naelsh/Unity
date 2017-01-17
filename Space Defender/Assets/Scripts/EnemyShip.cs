@@ -6,6 +6,9 @@ public class EnemyShip : MonoBehaviour {
 	public float hitPoints = 150f;
 	public EnemyLaser laserShot;
 	public float shootingFrequency = 0.5f;
+	public int pointValue = 123;
+
+	private ScoreKeeper scoreKeeper;
 
 	void OnTriggerEnter2D(Collider2D collider){
 		PlayerLaser playerLaser = collider.gameObject.GetComponent<PlayerLaser> ();
@@ -14,6 +17,7 @@ public class EnemyShip : MonoBehaviour {
 			playerLaser.Hit();
 			if (hitPoints <= 0) {
 				Destroy(gameObject);
+				scoreKeeper.Score(pointValue);
 			}
 		}
 	}
@@ -28,5 +32,9 @@ public class EnemyShip : MonoBehaviour {
 		if (Random.value < probability){
 			FireProjectile();
 		}
+	}
+
+	void Start(){
+		scoreKeeper = GameObject.Find ("Score").GetComponent<ScoreKeeper>();
 	}
 }
