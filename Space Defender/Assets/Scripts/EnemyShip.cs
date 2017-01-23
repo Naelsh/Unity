@@ -7,6 +7,7 @@ public class EnemyShip : MonoBehaviour {
 	public EnemyLaser laserShot;
 	public float shootingFrequency = 0.5f;
 	public int pointValue = 123;
+	public AudioSource laserAudio;
 
 	private ScoreKeeper scoreKeeper;
 
@@ -24,6 +25,8 @@ public class EnemyShip : MonoBehaviour {
 
 	void FireProjectile(){
 		Instantiate(laserShot, new Vector3(this.transform.position.x,this.transform.position.y - 1f,this.transform.position.z), Quaternion.identity);
+		laserAudio = GetComponent<AudioSource> ();
+		laserAudio.Play ();
 	}
 
 	void Update(){
