@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour {
 	public GameObject laserShot;
 	public float fireSpeed = 0.2f;
 	public float hitPoints = 500f;
-	public AudioSource laserAudio;
+	public AudioClip laserAudio;
 
 	private float padding = 0.6f;
 	private float xMin, xMax, yMin, yMax;
@@ -29,7 +29,6 @@ public class PlayerController : MonoBehaviour {
 		yMin = topMostPos.y + padding;
 		yMax = bottomMostPos.y - padding;
 
-		laserAudio = GetComponent<AudioSource> ();
 	}
 	
 	// Update is called once per frame
@@ -72,7 +71,7 @@ public class PlayerController : MonoBehaviour {
 
 	void FireProjectile(){
 		Instantiate(laserShot, new Vector3(this.transform.position.x,this.transform.position.y + 1f,this.transform.position.z), Quaternion.identity);
-		laserAudio.Play ();
+		AudioSource.PlayClipAtPoint (laserAudio, transform.position);
 	}
 
 	void OnTriggerEnter2D(Collider2D collider){
@@ -81,8 +80,17 @@ public class PlayerController : MonoBehaviour {
 			hitPoints -= enemyLaser.GetDamage();
 			enemyLaser.Hit();
 			if (hitPoints <= 0) {
-				Destroy(gameObject);
+				Die();
 			}
+
 		}
+
 	}
+
+	void Die(){
+		LevelManager man = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+		man.LoadLevel ("Lose_Window");
+		Destroy(gameObject);
+	}
+	
 }

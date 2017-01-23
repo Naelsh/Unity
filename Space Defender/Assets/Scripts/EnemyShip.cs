@@ -7,7 +7,8 @@ public class EnemyShip : MonoBehaviour {
 	public EnemyLaser laserShot;
 	public float shootingFrequency = 0.5f;
 	public int pointValue = 123;
-	public AudioSource laserAudio;
+	public AudioClip laserAudio;
+	public AudioClip deathSound;
 
 	private ScoreKeeper scoreKeeper;
 
@@ -17,6 +18,7 @@ public class EnemyShip : MonoBehaviour {
 			hitPoints -= playerLaser.GetDamage();
 			playerLaser.Hit();
 			if (hitPoints <= 0) {
+				AudioSource.PlayClipAtPoint(deathSound,transform.position);
 				Destroy(gameObject);
 				scoreKeeper.Score(pointValue);
 			}
@@ -25,8 +27,7 @@ public class EnemyShip : MonoBehaviour {
 
 	void FireProjectile(){
 		Instantiate(laserShot, new Vector3(this.transform.position.x,this.transform.position.y - 1f,this.transform.position.z), Quaternion.identity);
-		laserAudio = GetComponent<AudioSource> ();
-		laserAudio.Play ();
+		AudioSource.PlayClipAtPoint (laserAudio, transform.position);
 	}
 
 	void Update(){
